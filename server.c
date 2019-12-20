@@ -315,11 +315,31 @@ int main(int argc, char *argv[])
 					// RAJOUTER DU CODE ICI
 
 					// En résumé, on envoie ses cartes au joueur 0, ainsi que la ligne qui lui correspond dans tableCartes
+                    sprintf(reply, "D %d %d %d", deck[0], deck[1], deck[2]);
+                    sendMessageToClient(tcpClients[0].ipAddress,
+                                    tcpClients[0].port,
+                                    reply);
 					// On envoie ses cartes au joueur 1, ainsi que la ligne qui lui correspond dans tableCartes
+                    sprintf(reply, "D %d %d %d", deck[3], deck[4], deck[5]);
+                    sendMessageToClient(tcpClients[1].ipAddress,
+                                    tcpClients[1].port,
+                                    reply);
+                    
 					// On envoie ses cartes au joueur 2, ainsi que la ligne qui lui correspond dans tableCartes
+                    sprintf(reply, "D %d %d %d", deck[6], deck[7], deck[8]);
+                    sendMessageToClient(tcpClients[2].ipAddress,
+                                    tcpClients[2].port,
+                                    reply);
+                    
 					// On envoie ses cartes au joueur 3, ainsi que la ligne qui lui correspond dans tableCartes
+                    sprintf(reply, "D %d %d %d", deck[9], deck[10], deck[11]);
+                    sendMessageToClient(tcpClients[3].ipAddress,
+                                    tcpClients[3].port,
+                                    reply);
+                    
 					// On envoie enfin un message a tout le monde pour definir qui est le joueur courant=0
-
+                    sprintf(reply, "M 0");
+                    broadcastMessage(reply);
                                         fsmServer=1;
 				}
 				break;
@@ -329,17 +349,17 @@ int main(int argc, char *argv[])
 	{
 		switch (buffer[0])
 		{
-                	case 'G':
+            case 'G':   // Guilty
 				// RAJOUTER DU CODE ICI
 				break;
-                	case 'O':
+            case 'O':   // Demander a tout le monde
 				// RAJOUTER DU CODE ICI
 				break;
-			case 'S':
+			case 'S':    // Demander a une personne
 				// RAJOUTER DU CODE ICI
 				break;
-                	default:
-                        	break;
+            default:
+                break;
 		}
         }
      	close(newsockfd);

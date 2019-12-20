@@ -83,9 +83,9 @@ void *fn_serveur_tcp(void *arg)
 
                 synchro=1;
 
-                while (synchro);
+                while (synchro);	// Bloquer la reception de message de reseaux
 
-     }
+     	}
 }
 
 void sendMessageToServer(char *ipAddress, int portno, char *mess)
@@ -252,6 +252,7 @@ int main(int argc, char ** argv)
 					sprintf(sendBuffer,"C %s %d %s",gClientIpAddress,gClientPort,gName);
 
 					// RAJOUTER DU CODE ICI
+					sendMessageToServer(gServerIpAddress, gServerPort, sendBuffer);
 
 					connectEnabled=0;
 				}
@@ -284,13 +285,14 @@ int main(int argc, char ** argv)
 						sprintf(sendBuffer,"G %d %d",gId, guiltSel);
 
 					// RAJOUTER DU CODE ICI
-
+						sendMessageToServer(gServerIpAddress, gServerPort, sendBuffer);
 					}
 					else if ((objetSel!=-1) && (joueurSel==-1))
 					{
 						sprintf(sendBuffer,"O %d %d",gId, objetSel);
 
 					// RAJOUTER DU CODE ICI
+						sendMessageToServer(gServerIpAddress, gServerPort, sendBuffer);
 
 					}
 					else if ((objetSel!=-1) && (joueurSel!=-1))
@@ -298,6 +300,7 @@ int main(int argc, char ** argv)
 						sprintf(sendBuffer,"S %d %d %d",gId, joueurSel,objetSel);
 
 					// RAJOUTER DU CODE ICI
+						sendMessageToServer(gServerIpAddress, gServerPort, sendBuffer);
 
 					}
 				}
@@ -322,23 +325,26 @@ int main(int argc, char ** argv)
 			// Message 'I' : le joueur recoit son Id
 			case 'I':
 				// RAJOUTER DU CODE ICI
-
+				gId = gbuffer[2] - 48;
+				//printf("id: %d\n", gId);
 				break;
 			// Message 'L' : le joueur recoit la liste des joueurs
 			case 'L':
 				// RAJOUTER DU CODE ICI
-
+				sscanf(gbuffer, "L %s %s %s %s", gNames[0], gNames[1], gNames[2], gNames[3]);
+				//printf("joueurs: %s %s %s %s\n", gNames[0], gNames[1], gNames[2], gNames[3]);
 				break;
 			// Message 'D' : le joueur recoit ses trois cartes
 			case 'D':
 				// RAJOUTER DU CODE ICI
-
+                sscanf(gbuffer, "D %d %d %d %d", &b[0], &b[1], &b[2], &b[3]);
 				break;
 			// Message 'M' : le joueur recoit le n° du joueur courant
 			// Cela permet d'affecter goEnabled pour autoriser l'affichage du bouton go
 			case 'M':
 				// RAJOUTER DU CODE ICI
-
+				sscanf(gbuffer, "M %d", &id);
+				//printf("joueurs: %s\n", gName);
 				break;
 			// Message 'V' : le joueur recoit une valeur de tableCartes
 			case 'V':
@@ -452,7 +458,7 @@ int main(int argc, char ** argv)
                 		SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
                 		SDL_DestroyTexture(Message);
                 		SDL_FreeSurface(surfaceMessage);
-			}
+				}
         	}
 
 
