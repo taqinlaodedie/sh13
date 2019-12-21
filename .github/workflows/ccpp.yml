@@ -21,8 +21,6 @@ jobs:
         sudo apt-get install libsdl2-gfx-dev
     - name: make
       run: make
-    - name: make check
-      run: make check
     - name: run
       run: |
         ./server localhost 32000 
