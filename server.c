@@ -27,6 +27,9 @@ char *nomcartes[]=
   "inspector Hopkins", "Sherlock Holmes", "John Watson", "Mycroft Holmes",
   "Mrs. Hudson", "Mary Morstan", "James Moriarty"};
 int joueurCourant;
+// CODE AJOUTE
+int etatJoueurs[] = {0, 0, 0, 0};   //1 si perdu
+int nbPerdu = 0;
 
 void error(const char *msg)
 {
@@ -211,6 +214,18 @@ void broadcastMessage(char *mess)
                         mess);
 }
 
+// CODE AJOUTE
+// Trouver l'id du joueur prochain
+void joueurProchain()
+{
+    if(joueurCourant >= 3)
+        joueurCourant = 0;
+    else
+        joueurCourant ++;
+    if(etatJoueurs[joueurCourant])
+        joueurProchain();
+}
+
 int main(int argc, char *argv[])
 {
      int sockfd, newsockfd, portno;
@@ -219,6 +234,7 @@ int main(int argc, char *argv[])
      struct sockaddr_in serv_addr, cli_addr;
      int n;
 	int i;
+    
 
         char com;
         char clientIpAddress[256], clientName[256];
@@ -319,24 +335,49 @@ int main(int argc, char *argv[])
                     sendMessageToClient(tcpClients[0].ipAddress,
                                     tcpClients[0].port,
                                     reply);
+                    for(int i = 0; i < 8; i++) {
+                        sprintf(reply,"V 0 %d %d", i, tableCartes[0][i]);
+                        sendMessageToClient(tcpClients[0].ipAddress,
+                                    tcpClients[0].port,
+                                    reply);
+                    }
+
 					// On envoie ses cartes au joueur 1, ainsi que la ligne qui lui correspond dans tableCartes
                     sprintf(reply, "D %d %d %d", deck[3], deck[4], deck[5]);
                     sendMessageToClient(tcpClients[1].ipAddress,
                                     tcpClients[1].port,
                                     reply);
-                    
+                    for(int i = 0; i < 8; i++) {
+                        sprintf(reply,"V 1 %d %d", i, tableCartes[1][i]);
+                        sendMessageToClient(tcpClients[1].ipAddress,
+                                    tcpClients[1].port,
+                                    reply);
+                    }
+
 					// On envoie ses cartes au joueur 2, ainsi que la ligne qui lui correspond dans tableCartes
                     sprintf(reply, "D %d %d %d", deck[6], deck[7], deck[8]);
                     sendMessageToClient(tcpClients[2].ipAddress,
                                     tcpClients[2].port,
                                     reply);
-                    
+                    for(int i = 0; i < 8; i++) {
+                        sprintf(reply,"V 2 %d %d", i, tableCartes[2][i]);
+                        sendMessageToClient(tcpClients[2].ipAddress,
+                                    tcpClients[2].port,
+                                    reply);
+                    }
+
 					// On envoie ses cartes au joueur 3, ainsi que la ligne qui lui correspond dans tableCartes
                     sprintf(reply, "D %d %d %d", deck[9], deck[10], deck[11]);
                     sendMessageToClient(tcpClients[3].ipAddress,
                                     tcpClients[3].port,
                                     reply);
-                    
+                    for(int i = 0; i < 8; i++) {
+                        sprintf(reply,"V 3 %d %d", i, tableCartes[3][i]);
+                        sendMessageToClient(tcpClients[3].ipAddress,
+                                    tcpClients[3].port,
+                                    reply);
+                    }
+
 					// On envoie enfin un message a tout le monde pour definir qui est le joueur courant=0
                     sprintf(reply, "M 0");
                     broadcastMessage(reply);
@@ -351,12 +392,54 @@ int main(int argc, char *argv[])
 		{
             case 'G':   // Guilty
 				// RAJOUTER DU CODE ICI
+                sscanf(buffer, "O %d %d", &joueurCourant, &n);
+                if(n != deck[12]) {
+                    etatJoueurs[joueurCourant] = 1; // Joueur courant perdu
+                    nbPerdu ++;
+                    sprintf(reply, "R %d 1", joueurCourant);    // Communiquer le resultat, 1 si perdu
+                    broadcastMessage(reply);
+                    if(nbPerdu < 3) {
+                        joueurProchain();
+                        sprintf(reply, "M %d", joueurCourant);
+                        broadcastMessage(reply);
+                    }
+                    else {
+                        for(i = 0; i < 3; i++) {
+                            if(!etatJoueurs[i])
+                                break;
+                        }
+                        sprintf(reply, "R %d 0", i);    // Communiquer le resultat, 0 si gagne
+                        broadcastMessage(reply);
+                    }
+                }
+                else {
+                    sprintf(reply, "R %d 0", joueurCourant);    // Communiquer le resultat, 0 si gagne
+                    broadcastMessage(reply);
+                }
 				break;
             case 'O':   // Demander a tout le monde
 				// RAJOUTER DU CODE ICI
+                sscanf(buffer, "O %d %d", &joueurCourant, &n);
+                for(i = 0; i < 4; i++) {
+                    sprintf(reply, "V %d %d %d", i, n, tableCartes[i][n]>0 ? 1:0);
+                    sendMessageToClient(tcpClients[joueurCourant].ipAddress,
+                                tcpClients[joueurCourant].port,
+                                reply);
+                }
+                joueurProchain();
+                sprintf(reply, "M %d", joueurCourant);
+                broadcastMessage(reply);
 				break;
 			case 'S':    // Demander a une personne
 				// RAJOUTER DU CODE ICI
+                sscanf(buffer, "S %d %d %d", &joueurCourant, &id, &n);
+                sprintf(reply, "V %d %d %d", id, n, tableCartes[id][n]);
+                sendMessageToClient(tcpClients[joueurCourant].ipAddress,
+                                tcpClients[joueurCourant].port,
+                                reply);
+                joueurProchain();
+                sprintf(reply, "M %d", joueurCourant);
+                broadcastMessage(reply);
 				break;
             default:
                 break;

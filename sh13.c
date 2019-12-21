@@ -325,14 +325,12 @@ int main(int argc, char ** argv)
 			// Message 'I' : le joueur recoit son Id
 			case 'I':
 				// RAJOUTER DU CODE ICI
-				gId = gbuffer[2] - 48;
-				//printf("id: %d\n", gId);
+				sscanf(gbuffer, "I %d", &gId);
 				break;
 			// Message 'L' : le joueur recoit la liste des joueurs
 			case 'L':
 				// RAJOUTER DU CODE ICI
 				sscanf(gbuffer, "L %s %s %s %s", gNames[0], gNames[1], gNames[2], gNames[3]);
-				//printf("joueurs: %s %s %s %s\n", gNames[0], gNames[1], gNames[2], gNames[3]);
 				break;
 			// Message 'D' : le joueur recoit ses trois cartes
 			case 'D':
@@ -344,12 +342,45 @@ int main(int argc, char ** argv)
 			case 'M':
 				// RAJOUTER DU CODE ICI
 				sscanf(gbuffer, "M %d", &id);
-				//printf("joueurs: %s\n", gName);
+				if(id == gId) {
+					goEnabled = 1;
+				}
+				else {
+					goEnabled = 0;
+				}
 				break;
 			// Message 'V' : le joueur recoit une valeur de tableCartes
 			case 'V':
 				// RAJOUTER DU CODE ICI
-
+                sscanf(gbuffer, "V %d %d %d", &i, &j, &ret);
+                tableCartes[i][j] = ret;	
+				break;
+			// CODE AJOUTE
+			// Message 'R': communication de resultat
+			case 'R':
+				sscanf(gbuffer, "R %d %d", &id, &ret);
+				if(id == gId) {
+					if(ret) {
+						printf("You lose!\n");
+						synchro = 0;
+					}
+					else {
+						printf("You win!\n");
+						synchro = 0;
+						quit = 1;
+					}
+				}
+				else {
+					if(ret) {
+						printf("Player %d loses!\n", id);
+						synchro = 0;
+					}
+					else {
+						printf("Player %d wins!\n", id);
+						synchro = 0;
+						quit = 1;
+					}
+				}
 				break;
 		}
 		synchro=0;
