@@ -9,11 +9,10 @@ jobs:
     
     steps:
     - uses: actions/checkout@v1
-    - name: configure
-      run: ./configure
     - name: make
       run: make
     - name: make check
       run: make check
-    - name: make distcheck
-      run: make distcheck
+    - name: run
+      run: ./server localhost 32000
+      run: ./sh13 localhost 32000 localhost 32001 a
