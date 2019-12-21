@@ -13,6 +13,13 @@ jobs:
       run: make
     - name: make check
       run: make check
-    - name: run
-      run: ./server localhost 32000
+    - name: runServer
+      run: ./server localhost 32000 
+    - name: run1
       run: ./sh13 localhost 32000 localhost 32001 a
+    - name: run2
+      run: ./sh13 localhost 32000 localhost 32002 b
+    - name: run3
+      run: ./sh13 localhost 32000 localhost 32003 c
+    - name: run4
+      run: ./sh13 localhost 32000 localhost 32004 d
