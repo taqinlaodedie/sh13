@@ -362,22 +362,18 @@ int main(int argc, char ** argv)
 				if(id == gId) {
 					if(ret) {
 						printf("You lose!\n");
-						synchro = 0;
 					}
 					else {
 						printf("You win!\n");
-						synchro = 0;
 						quit = 1;
 					}
 				}
 				else {
 					if(ret) {
 						printf("Player %d loses!\n", id);
-						synchro = 0;
 					}
 					else {
 						printf("Player %d wins!\n", id);
-						synchro = 0;
 						quit = 1;
 					}
 				}
