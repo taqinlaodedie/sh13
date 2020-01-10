@@ -392,7 +392,8 @@ int main(int argc, char *argv[])
 		{
             case 'G':   // Guilty
 				// RAJOUTER DU CODE ICI
-                sscanf(buffer, "O %d %d", &joueurCourant, &n);
+                sscanf(buffer, "G %d %d", &joueurCourant, &n);
+                printf("Guilty: %d\n", n);
                 if(n != deck[12]) {
                     etatJoueurs[joueurCourant] = 1; // Joueur courant perdu
                     nbPerdu ++;
@@ -415,6 +416,7 @@ int main(int argc, char *argv[])
                 else {
                     sprintf(reply, "R %d 0", joueurCourant);    // Communiquer le resultat, 0 si gagne
                     broadcastMessage(reply);
+                    return 0;
                 }
 				break;
             case 'O':   // Demander a tout le monde
